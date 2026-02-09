@@ -1,0 +1,22 @@
+{
+  "compiler": "g++",
+  "includePaths": [
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/asio-1.36.0/include",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/json-develop/include",
+    "."
+  ],
+  "libraryPaths": [],
+  "libraries": [
+    "ws2_32",
+    "mswsock",
+    "pthread"
+  ],
+  "output": "main.exe",
+  "compilerFlags": [
+    "-Wall",
+    "-std=c++17",
+    "-DASIO_STANDALONE",
+    "-O3",
+    "-D_WIN32_WINNT=0x0A00"
+  ]
+}

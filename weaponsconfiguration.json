@@ -1,0 +1,21 @@
+{
+  "//": "Weapon Database - Add new entities here",
+  "weapons": [
+    {
+      "id": 0,
+      "name": "AK-47",
+      "damage": 30,
+      "ammo_cap": 320,
+      "mag_cap": 32,
+      "reload": 1.4
+    },
+    {
+      "id": 1,
+      "name": "M4A1",
+      "damage": 25,
+      "ammo_cap": 300,
+      "mag_cap": 30,
+      "reload": 1.2
+    }
+  ]
+}
