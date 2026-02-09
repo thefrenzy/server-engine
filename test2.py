@@ -14,7 +14,7 @@ try:
     while True:
         start = time.time()
 
-        sock.sendto(b"test1", (SERVER_IP, SERVER_PORT))
+        sock.sendto(b"test2", (SERVER_IP, SERVER_PORT))
 
         # maintain 60 Hz
         elapsed = time.time() - start

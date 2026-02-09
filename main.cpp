@@ -8,7 +8,7 @@
 #include "network_engine.h"
 #include "mapmanager.h"
 #include "Panel.h"
-#include "Logger.h" // 1. Must include the new Logger header
+#include "Logger.h"
 
 using namespace std;
 
@@ -30,7 +30,6 @@ int main() {
     string incoming_data;
     bool running = true;
 
-    // 2. Changed AddLog to Logger::Log
     Logger::Log("[SYSTEM] Server Engine Started on Port 8888");
 
     while (running) {

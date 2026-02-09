@@ -1,73 +1,94 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <iomanip> // For better text alignment
+#include <cstdarg>
 #include <nlohmann/json.hpp>
 #include "WeaponsManager.h"
+#include "Logger.h"
 
-using namespace std;
 using json = nlohmann::json;
 
+// Helper
+std::string string_format(const std::string& fmt_str, ...) {
+    va_list args;
+    va_start(args, fmt_str);
+    char buf[512];
+    vsnprintf(buf, sizeof(buf), fmt_str.c_str(), args);
+    va_end(args);
+    return std::string(buf);
+}
+
 void InitWeapons(WeaponManager &wm) {
-    // Clear the arrays first to ensure no garbage data
-    for(int i = 0; i < MAX_WEAPONS; i++) {
+    for (int i = 0; i < MAX_WEAPONS; i++) {
         wm.weaponname[i] = "";
+        wm.weaponidentifier[i] = 0;     // reset int
     }
 
-    ifstream file("weaponsconfiguration.json");
+    std::ifstream file("weaponsconfiguration.json");
     if (!file.is_open()) {
-        cerr << "Error: Could not find weaponsconfiguration.json" << endl;
+        Logger::Log("[WEAPON ERROR] Cannot open weaponsconfiguration.json");
         return;
     }
 
     json data;
-    file >> data;
+    try {
+        file >> data;
+    } catch (const json::exception& e) {
+        Logger::Log("[WEAPON ERROR] JSON parse failed: " + std::string(e.what()));
+        return;
+    }
 
     int index = 0;
-    for (auto& w : data["weapons"]) {
-        if (index >= MAX_WEAPONS) break; 
+    for (const auto& w : data["weapons"]) {
+        if (index >= MAX_WEAPONS) break;
 
-        wm.weaponidentifier[index] = w["id"];
-        wm.weaponname[index] = w["name"];
-        wm.weapondamage[index] = w["damage"];
-        wm.ammocapacity[index] = w["ammo_cap"];
-        wm.magazinecapacity[index] = w["mag_cap"];
-        wm.reloadtime[index] = w["reload"];
+        wm.weaponidentifier[index] = w.value("id", 0);              // ← int
+        wm.weaponname[index]       = w.value("name", "");
+        wm.weapondamage[index]     = w.value("damage", 0);
+        wm.ammocapacity[index]     = w.value("ammo_cap", 0);
+        wm.magazinecapacity[index] = w.value("mag_cap", 0);
+        wm.reloadtime[index]       = w.value("reload", 0.0f);
+
         index++;
     }
-    cout << "Loaded " << index << " weapons into the system." << endl;
+
+    Logger::Log("[WEAPON] Loaded " + std::to_string(index) + " weapons");
 }
 
-// New function to display ALL loaded weapons
 void displayAllWeapons(WeaponManager &wm) {
-    cout << "\n--- CURRENT WEAPON DATABASE ---" << endl;
-    cout << left << setw(5)  << "ID" 
-         << setw(15) << "NAME" 
-         << setw(10) << "DMG" 
-         << setw(10) << "AMMO" 
-         << "RELOAD" << endl;
-    cout << "-----------------------------------------------" << endl;
+    Logger::Log("--- CURRENT WEAPON DATABASE ---");
 
+    Logger::Log(
+        string_format("%-5s %-15s %-8s %-10s %s",
+                      "ID", "NAME", "DMG", "AMMO CAP", "RELOAD")
+    );
+
+    Logger::Log("--------------------------------------------------");
+
+    int count = 0;
     for (int i = 0; i < MAX_WEAPONS; i++) {
-        // Only print if the name is not empty
         if (!wm.weaponname[i].empty()) {
-            cout << left << setw(5)  << wm.weaponidentifier[i]
-                 << setw(15) << wm.weaponname[i]
-                 << setw(10) << wm.weapondamage[i]
-                 << setw(10) << wm.ammocapacity[i]
-                 << wm.reloadtime[i] << "s" << endl;
+            count++;
+            Logger::Log(string_format("%-5d %-15s %-8d %-10d %.1fs",
+                                      wm.weaponidentifier[i],          // ← int
+                                      wm.weaponname[i].c_str(),
+                                      wm.weapondamage[i],
+                                      wm.ammocapacity[i],
+                                      wm.reloadtime[i]));
         }
     }
-    cout << "-----------------------------------------------\n" << endl;
+
+    Logger::Log("--------------------------------------------------");
+    Logger::Log(count ? "Total: " + std::to_string(count) : "(no weapons loaded)");
 }
 
-void displayWeapon(const string& weaponname, WeaponManager &wm) {
+void displayWeapon(const std::string& weaponname, WeaponManager &wm) {
     for (int i = 0; i < MAX_WEAPONS; i++) {
         if (wm.weaponname[i] == weaponname) {
-            cout << "Detailed View: " << wm.weaponname[i] 
-                 << " [ID: " << wm.weaponidentifier[i] << "]" << endl;
+            Logger::Log("Detailed View → " + wm.weaponname[i] +
+                        "  [ID: " + std::to_string(wm.weaponidentifier[i]) + "]");
             return;
         }
     }
-    cout << "Weapon '" << weaponname << "' not found." << endl;
+    Logger::Log("[WEAPON] Weapon '" + weaponname + "' not found");
 }

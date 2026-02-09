@@ -1,18 +1,22 @@
-#include<array>
-#include<string>
+#ifndef PLAYERS_MANAGER_H
+#define PLAYERS_MANAGER_H
 
-using namespace std;
+#include <array>
+#include <string>
 
-inline const int MAX_IDS = 10;
-inline const int MAX_PLAYER_ATTRIBUTES = 4;
+inline constexpr int MAX_IDS = 10;
+inline constexpr int MAX_PLAYER_ATTRIBUTES = 4;
 
-extern array<string, MAX_PLAYER_ATTRIBUTES> attribute;
+// Declaration only (extern)
+extern const std::array<std::string, MAX_PLAYER_ATTRIBUTES> attribute;
 
-struct PlayerManager{
-    array<int, MAX_IDS> identifier;
-    array<float, MAX_IDS> health;
-    array<float, MAX_IDS> armor;
-    array<int, MAX_IDS> viprank;
+struct PlayerManager {
+    std::array<int,   MAX_IDS> identifier;
+    std::array<float, MAX_IDS> health;
+    std::array<float, MAX_IDS> armor;
+    std::array<int,   MAX_IDS> viprank;
 };
 
-void InitPlayers(PlayerManager &pl);
+void InitPlayers(PlayerManager& pl);
+
+#endif 

@@ -1,18 +1,23 @@
-#include<iostream>
-#include<string>
-
 #include "PlayersManager.h"
+#include "Logger.h"
 
-using namespace std;
+#include <string>
 
-array<string, MAX_PLAYER_ATTRIBUTES> attribute{"identifier","health","armor","viprank"};
+// Single definition of the array (only here, not in header)
+const std::array<std::string, MAX_PLAYER_ATTRIBUTES> attribute = {
+    "identifier",
+    "health",
+    "armor",
+    "viprank"
+};
 
-void InitPlayers(PlayerManager &pl){
-    for (int i = 0; i<MAX_IDS ; i++){
-        pl.identifier[i]= i;
-        pl.health[i] = 100;
-        pl.armor[i] = 100;
-        pl.viprank[i] = i+1;
+void InitPlayers(PlayerManager& pl) {
+    for (int i = 0; i < MAX_IDS; ++i) {
+        pl.identifier[i] = i;
+        pl.health[i]     = 100.0f;
+        pl.armor[i]      = 100.0f;
+        pl.viprank[i]    = 0;          // or i + 1 if that's your intention
     }
-    cout<< "players initialzied successfuly"<<endl;
+
+    Logger::Log("[PLAYER] Initialized " + std::to_string(MAX_IDS) + " player slots");
 }

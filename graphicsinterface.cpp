@@ -30,7 +30,6 @@ void RunGraphicsPanel(MapState &ms) {
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -43,32 +42,32 @@ void RunGraphicsPanel(MapState &ms) {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
 
         ImGui::Begin("###Background", nullptr,
-                     ImGuiWindowFlags_NoTitleBar |
-                     ImGuiWindowFlags_NoResize |
-                     ImGuiWindowFlags_NoMove |
-                     ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoTitleBar    |
+                     ImGuiWindowFlags_NoResize      |
+                     ImGuiWindowFlags_NoMove        |
+                     ImGuiWindowFlags_NoCollapse    |
                      ImGuiWindowFlags_NoSavedSettings);
 
         ImGui::PopStyleVar(3);
 
         float footer = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 2.0f;
 
-        ImGui::BeginChild("ScrollingLog", ImVec2(0, -footer), true, ImGuiWindowFlags_HorizontalScrollbar);
+        if (ImGui::BeginChild("ScrollingLog", ImVec2(0, -footer), true, ImGuiWindowFlags_HorizontalScrollbar)) {
+            const auto& logs = Logger::GetLogs();
 
-        const auto& logs = Logger::GetLogs();
+            ImGuiListClipper clipper;
+            clipper.Begin(static_cast<int>(logs.size()));
+            while (clipper.Step()) {
+                for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
+                    // ← This line makes EVERY logged message green
+                    ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), "%s", logs[i].c_str());
+                }
+            }
 
-        ImGuiListClipper clipper;
-        clipper.Begin(static_cast<int>(logs.size()));
-        while (clipper.Step()) {
-            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
-                ImGui::TextUnformatted(logs[i].c_str());
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 2.0f) {
+                ImGui::SetScrollHereY(1.0f);
             }
         }
-
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 2.0f) {
-            ImGui::SetScrollHereY(1.0f);
-        }
-
         ImGui::EndChild();
 
         ImGui::Separator();

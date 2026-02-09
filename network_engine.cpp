@@ -1,4 +1,5 @@
 #include "network_engine.h"
+#include "Logger.h"
 
 static asio::io_context io_ctx;
 static udp::socket* global_socket = nullptr;
