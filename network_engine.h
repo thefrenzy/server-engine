@@ -1,7 +1,6 @@
 #ifndef NETWORK_ENGINE_HPP
 #define NETWORK_ENGINE_HPP
 
-#define ASIO_STANDALONE
 #include <asio.hpp>
 #include <string>
 #include <vector>
@@ -9,6 +8,8 @@
 #include <queue>
 #include <thread>
 #include <atomic>
+
+#include "Logger.h"
 
 using asio::ip::udp;
 

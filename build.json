@@ -3,20 +3,30 @@
   "includePaths": [
     "C:/Users/kloodasprr/Desktop/cpp/libraries/asio-1.36.0/include",
     "C:/Users/kloodasprr/Desktop/cpp/libraries/json-develop/include",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/glfw-3.4.bin.WIN64/include",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/backends",
     "."
   ],
-  "libraryPaths": [],
-  "libraries": [
-    "ws2_32",
-    "mswsock",
-    "pthread"
+  "extraSources": [
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/imgui.cpp",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/imgui_draw.cpp",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/imgui_widgets.cpp",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/imgui_tables.cpp",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/backends/imgui_impl_glfw.cpp",
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/imgui-master/backends/imgui_impl_opengl3.cpp"
   ],
+  "libraryPaths": [
+    "C:/Users/kloodasprr/Desktop/cpp/libraries/glfw-3.4.bin.WIN64/lib-mingw-w64"
+  ],
+  "libraries": ["glfw3", "gdi32", "opengl32", "imm32", "ws2_32", "mswsock", "pthread"],
   "output": "main.exe",
   "compilerFlags": [
     "-Wall",
     "-std=c++17",
     "-DASIO_STANDALONE",
     "-O3",
-    "-D_WIN32_WINNT=0x0A00"
+    "-D_WIN32_WINNT=0x0A00",
+    "-mwindows"
   ]
 }
