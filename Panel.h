@@ -3,8 +3,11 @@
 
 #include "mapmanager.h"
 #include <vector>
+#pragma once
 #include <string>
+#include <atomic>
 
+extern std::atomic<bool> g_running;
 extern std::vector<std::string> server_logs;
 
 void AddLog(std::string msg);
