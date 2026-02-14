@@ -13,9 +13,8 @@ void ExecuteCommand(std::string cmd, MapState &ms) {
     }
     else if (cmd == "/list") {
         Logger::Log("--- Registered Maps ---");
-        DisplayMaps(ms);   // reuse the function you already have
+        DisplayMaps(ms);
     }
-
 }
 
 void RunTextTerminal(MapState &ms) {

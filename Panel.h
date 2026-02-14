@@ -1,15 +1,16 @@
 #ifndef PANEL_H
 #define PANEL_H
 
-#include "mapmanager.h"
-#include <vector>
 #include <string>
+#include <atomic>
+#include <vector>
 
-extern std::vector<std::string> server_logs;
+struct MapState; 
 
-void AddLog(std::string msg);
+extern std::atomic<bool> g_running;
+
 void ExecuteCommand(std::string cmd, MapState &ms);
 void RunGraphicsPanel(MapState &ms);
-void RunTextTerminal(MapState &ms);
+void Traffic_Run();
 
 #endif
