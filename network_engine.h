@@ -10,6 +10,7 @@
 #include <atomic>
 
 #include "Logger.h"
+#include "Panel.h" 
 
 using asio::ip::udp;
 

@@ -7,7 +7,6 @@
 inline constexpr int MAX_IDS = 10;
 inline constexpr int MAX_PLAYER_ATTRIBUTES = 4;
 
-// Declaration only (extern)
 extern const std::array<std::string, MAX_PLAYER_ATTRIBUTES> attribute;
 
 struct PlayerManager {
@@ -19,4 +18,4 @@ struct PlayerManager {
 
 void InitPlayers(PlayerManager& pl);
 
-#endif 
+#endif
