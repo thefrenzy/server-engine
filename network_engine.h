@@ -5,11 +5,12 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include <queue>
+#include <deque> // Fix: Changed to deque to support pop_front
 #include <thread>
 #include <atomic>
 
 #include "Logger.h"
+#include "Panel.h" 
 
 using asio::ip::udp;
 
@@ -20,6 +21,6 @@ void net_send(const std::string& message, const std::string& host, int port);
 bool net_get_next_message(std::string& out_msg);
 
 extern std::mutex queue_mutex;
-extern std::queue<std::string> message_queue;
+extern std::deque<std::string> message_queue; // Fix: Must match .cpp
 
 #endif

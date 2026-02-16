@@ -8,7 +8,6 @@
 
 using json = nlohmann::json;
 
-// Helper
 std::string string_format(const std::string& fmt_str, ...) {
     va_list args;
     va_start(args, fmt_str);
@@ -21,7 +20,7 @@ std::string string_format(const std::string& fmt_str, ...) {
 void InitWeapons(WeaponManager &wm) {
     for (int i = 0; i < MAX_WEAPONS; i++) {
         wm.weaponname[i] = "";
-        wm.weaponidentifier[i] = 0;     // reset int
+        wm.weaponidentifier[i] = 0;
     }
 
     std::ifstream file("weaponsconfiguration.json");
@@ -42,9 +41,9 @@ void InitWeapons(WeaponManager &wm) {
     for (const auto& w : data["weapons"]) {
         if (index >= MAX_WEAPONS) break;
 
-        wm.weaponidentifier[index] = w.value("id", 0);              // ← int
+        wm.weaponidentifier[index] = w.value("id", 0);
         wm.weaponname[index]       = w.value("name", "");
-        wm.weapondamage[index]     = w.value("damage", 0);
+        wm.weapondamage[index]     = w.value("damage", 0.0f);
         wm.ammocapacity[index]     = w.value("ammo_cap", 0);
         wm.magazinecapacity[index] = w.value("mag_cap", 0);
         wm.reloadtime[index]       = w.value("reload", 0.0f);
@@ -57,20 +56,15 @@ void InitWeapons(WeaponManager &wm) {
 
 void displayAllWeapons(WeaponManager &wm) {
     Logger::Log("--- CURRENT WEAPON DATABASE ---");
-
-    Logger::Log(
-        string_format("%-5s %-15s %-8s %-10s %s",
-                      "ID", "NAME", "DMG", "AMMO CAP", "RELOAD")
-    );
-
+    Logger::Log(string_format("%-5s %-15s %-8s %-10s %s", "ID", "NAME", "DMG", "AMMO CAP", "RELOAD"));
     Logger::Log("--------------------------------------------------");
 
     int count = 0;
     for (int i = 0; i < MAX_WEAPONS; i++) {
         if (!wm.weaponname[i].empty()) {
             count++;
-            Logger::Log(string_format("%-5d %-15s %-8d %-10d %.1fs",
-                                      wm.weaponidentifier[i],          // ← int
+            Logger::Log(string_format("%-5d %-15s %-8.1f %-10d %.1fs",
+                                      wm.weaponidentifier[i],
                                       wm.weaponname[i].c_str(),
                                       wm.weapondamage[i],
                                       wm.ammocapacity[i],
@@ -85,8 +79,7 @@ void displayAllWeapons(WeaponManager &wm) {
 void displayWeapon(const std::string& weaponname, WeaponManager &wm) {
     for (int i = 0; i < MAX_WEAPONS; i++) {
         if (wm.weaponname[i] == weaponname) {
-            Logger::Log("Detailed View → " + wm.weaponname[i] +
-                        "  [ID: " + std::to_string(wm.weaponidentifier[i]) + "]");
+            Logger::Log("Detailed View -> " + wm.weaponname[i] + " [ID: " + std::to_string(wm.weaponidentifier[i]) + "]");
             return;
         }
     }

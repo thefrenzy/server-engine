@@ -1,27 +1,23 @@
 #include "Logger.h"
-#include <iostream>  // Added for std::cout
+#include <iostream>
 #include <vector>
 #include <mutex>
 
-std::vector<std::string> Logger::logs;
-std::mutex Logger::logMutex;
+static std::vector<std::string> g_logs;
+static std::mutex g_logMutex;
 
 void Logger::Log(const std::string& message) {
-    std::lock_guard<std::mutex> lock(logMutex);
+    std::lock_guard<std::mutex> lock(g_logMutex);
     
-    // 1. Storage for Graphical Interface
-    logs.push_back(message);
-    
-    // 2. Output to the Terminal/Console
+    g_logs.push_back(message);
     std::cout << message << std::endl;
 
-    // Maintain buffer size
-    if (logs.size() > 500) {
-        logs.erase(logs.begin());
+    if (g_logs.size() > 500) {
+        g_logs.erase(g_logs.begin());
     }
 }
 
 std::vector<std::string> Logger::GetLogs() {
-    std::lock_guard<std::mutex> lock(logMutex);
-    return logs;
+    std::lock_guard<std::mutex> lock(g_logMutex);
+    return g_logs;
 }
