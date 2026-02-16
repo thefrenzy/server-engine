@@ -6,104 +6,90 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include <vector>
+#include <sstream>
+
+extern std::atomic<bool> g_running;
 
 void RunGraphicsPanel(MapState &ms) {
     if (!glfwInit()) return;
-
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Server Engine Monitor", nullptr, nullptr);
-    if (!window) {
-        glfwTerminate();
-        return;
-    }
-
+    if (!window) { glfwTerminate(); return; }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-
+   
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
-
     char commandInput[256] = {};
 
-    while (!glfwWindowShouldClose(window)) {
+    // Solid green color for all log lines
+    const ImVec4 GREEN = ImVec4(0.1f, 0.9f, 0.2f, 1.0f);
+
+    while (!glfwWindowShouldClose(window) && g_running) {
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // Fullscreen Window Setup
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::SetNextWindowSize(io.DisplaySize);
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-
         ImGui::Begin("###Background", nullptr,
-                     ImGuiWindowFlags_NoTitleBar    |
-                     ImGuiWindowFlags_NoResize      |
-                     ImGuiWindowFlags_NoMove        |
-                     ImGuiWindowFlags_NoCollapse    |
+                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
                      ImGuiWindowFlags_NoSavedSettings);
-
-        ImGui::PopStyleVar(3);
+        ImGui::PopStyleVar(2);
 
         float footer = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 2.0f;
 
         if (ImGui::BeginChild("ScrollingLog", ImVec2(0, -footer), true, ImGuiWindowFlags_HorizontalScrollbar)) {
             const auto& logs = Logger::GetLogs();
-
             ImGuiListClipper clipper;
             clipper.Begin(static_cast<int>(logs.size()));
             while (clipper.Step()) {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
-                    // ← This line makes EVERY logged message green
-                    ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), "%s", logs[i].c_str());
+                    ImGui::TextColored(GREEN, "%s", logs[i].c_str());
                 }
             }
 
-            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 2.0f) {
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 3.0f)
                 ImGui::SetScrollHereY(1.0f);
-            }
         }
         ImGui::EndChild();
 
         ImGui::Separator();
 
-        bool reclaim = false;
+        // Command Input
         ImGui::PushItemWidth(-FLT_MIN);
-        if (ImGui::InputText("Command", commandInput, IM_ARRAYSIZE(commandInput),
-                             ImGuiInputTextFlags_EnterReturnsTrue)) {
+        if (ImGui::InputText("##Command", commandInput, IM_ARRAYSIZE(commandInput), ImGuiInputTextFlags_EnterReturnsTrue)) {
             std::string cmd = commandInput;
             if (!cmd.empty()) {
-                Logger::Log("[SERVER] " + cmd);
+                Logger::Log("[ADMIN] " + cmd);
                 ExecuteCommand(cmd, ms);
             }
             commandInput[0] = '\0';
-            reclaim = true;
+            ImGui::SetKeyboardFocusHere(-1);
         }
         ImGui::PopItemWidth();
 
-        if (reclaim) {
-            ImGui::SetKeyboardFocusHere(-1);
-        }
-
         ImGui::End();
 
+        // Render
         ImGui::Render();
-
         int w, h;
         glfwGetFramebufferSize(window, &w, &h);
         glViewport(0, 0, w, h);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         glfwSwapBuffers(window);
     }
-
+   
+    g_running = false;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
